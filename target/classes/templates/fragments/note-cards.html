@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<body>
+<div th:fragment="cards(notes)" class="note-grid">
+    <article class="note-card" th:each="note : ${notes}">
+        <a th:href="@{/notes/{id}(id=${note.id})}" class="note-link">
+            <div class="d-flex justify-content-between gap-2">
+                <h3 th:text="${note.title}">Title</h3>
+                <span th:if="${note.autoSaved}" class="badge text-bg-warning">Draft</span>
+            </div>
+            <p th:text="${#strings.abbreviate(note.plainText, 140)}">Preview</p>
+            <div class="note-meta">
+                <span th:if="${note.category}" class="pill" th:style="'--pill:' + ${note.category.color}" th:text="${note.category.name}">Category</span>
+                <span class="tag-pill" th:each="tag : ${note.tags}" th:style="'--pill:' + ${tag.color}" th:text="${tag.name}">Tag</span>
+            </div>
+        </a>
+    </article>
+    <div th:if="${#lists.isEmpty(notes)}" class="empty-state">
+        <i class="bi bi-journal-text"></i>
+        <h3>No notes found</h3>
+        <p>Create a note or adjust your filters.</p>
+    </div>
+</div>
+</body>
+</html>

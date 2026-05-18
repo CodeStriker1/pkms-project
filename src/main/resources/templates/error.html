@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/head :: head('Error')}"></head>
+<body>
+<div th:replace="~{fragments/nav :: nav}"></div>
+<main class="container py-5">
+    <section class="empty-state">
+        <i class="bi bi-exclamation-triangle"></i>
+        <h1 th:text="${status}">Error</h1>
+        <p th:text="${message}">Something went wrong.</p>
+        <a class="btn btn-primary" th:href="@{/dashboard}">Go to Dashboard</a>
+    </section>
+</main>
+<div th:replace="~{fragments/nav :: scripts}"></div>
+</body>
+</html>

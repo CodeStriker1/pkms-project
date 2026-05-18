@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/head :: head('Dashboard')}"></head>
+<body>
+<div th:replace="~{fragments/nav :: nav}"></div>
+<div th:replace="~{fragments/nav :: alerts}"></div>
+<main class="container-fluid px-4 py-4">
+    <div class="page-title">
+        <div>
+            <h1 th:text="'Welcome, ' + ${user.name}">Welcome</h1>
+            <p>Knowledge workspace overview</p>
+        </div>
+        <a class="btn btn-primary" th:href="@{/notes/new}"><i class="bi bi-plus-lg me-1"></i>Create Note</a>
+    </div>
+    <section class="stats-grid">
+        <div class="stat-card"><span>Total</span><strong th:text="${stats.totalNotes()}">0</strong></div>
+        <div class="stat-card"><span>Active</span><strong th:text="${stats.activeNotes()}">0</strong></div>
+        <div class="stat-card"><span>Favorites</span><strong th:text="${stats.favoriteNotes()}">0</strong></div>
+        <div class="stat-card"><span>Archived</span><strong th:text="${stats.archivedNotes()}">0</strong></div>
+        <div class="stat-card"><span>Trash</span><strong th:text="${stats.trashedNotes()}">0</strong></div>
+    </section>
+    <section class="content-section mt-4">
+        <div class="section-header">
+            <h2>Recent Notes</h2>
+            <a th:href="@{/notes}">View all</a>
+        </div>
+        <div th:replace="~{fragments/note-cards :: cards(${notes})}"></div>
+    </section>
+</main>
+<div th:replace="~{fragments/nav :: scripts}"></div>
+</body>
+</html>

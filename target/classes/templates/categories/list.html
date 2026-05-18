@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/head :: head('Categories')}"></head>
+<body>
+<div th:replace="~{fragments/nav :: nav}"></div>
+<div th:replace="~{fragments/nav :: alerts}"></div>
+<main class="container-fluid px-4 py-4">
+    <div class="page-title"><div><h1>Categories</h1><p>Group notes by subject or workflow</p></div></div>
+    <div class="management-grid">
+        <form class="panel-form" th:action="@{/categories}" th:object="${categoryForm}" method="post">
+            <h2>New Category</h2>
+            <input class="form-control" th:field="*{name}" placeholder="Name" required>
+            <textarea class="form-control" th:field="*{description}" placeholder="Description"></textarea>
+            <input class="form-control form-control-color" type="color" th:field="*{color}">
+            <button class="btn btn-primary" type="submit">Save Category</button>
+        </form>
+        <div class="list-panel">
+            <div class="list-row" th:each="category : ${categories}">
+                <div><h3 th:text="${category.name}">Category</h3><p th:text="${category.description}"></p></div>
+                <div class="d-flex align-items-center gap-2">
+                    <span class="color-dot" th:style="'background:' + ${category.color}"></span>
+                    <form th:action="@{/categories/{id}/delete(id=${category.id})}" method="post">
+                        <button class="btn btn-sm btn-outline-danger" type="submit"><i class="bi bi-trash"></i></button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+<div th:replace="~{fragments/nav :: scripts}"></div>
+</body>
+</html>

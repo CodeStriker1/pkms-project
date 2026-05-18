@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/head :: head('Notes')}"></head>
+<body>
+<div th:replace="~{fragments/nav :: nav}"></div>
+<div th:replace="~{fragments/nav :: alerts}"></div>
+<main class="container-fluid px-4 py-4">
+    <div class="page-title">
+        <div><h1>Notes</h1><p>Search, rank, and filter your knowledge base</p></div>
+        <a class="btn btn-primary" th:href="@{/notes/new}"><i class="bi bi-plus-lg me-1"></i>New Note</a>
+    </div>
+    <form class="filter-bar" th:action="@{/notes}" method="get">
+        <input class="form-control" name="q" th:value="${q}" placeholder="Search title or content">
+        <select class="form-select" name="categoryId">
+            <option value="">All categories</option>
+            <option th:each="category : ${categories}" th:value="${category.id}" th:selected="${category.id == categoryId}" th:text="${category.name}"></option>
+        </select>
+        <select class="form-select" name="tagIds" multiple size="1">
+            <option th:each="tag : ${tags}" th:value="${tag.id}" th:selected="${selectedTagIds.contains(tag.id)}" th:text="${tag.name}"></option>
+        </select>
+        <button class="btn btn-dark" type="submit"><i class="bi bi-search me-1"></i>Search</button>
+    </form>
+    <div th:replace="~{fragments/note-cards :: cards(${notes})}"></div>
+</main>
+<div th:replace="~{fragments/nav :: scripts}"></div>
+</body>
+</html>

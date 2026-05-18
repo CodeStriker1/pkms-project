@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/head :: head('Trash')}"></head>
+<body>
+<div th:replace="~{fragments/nav :: nav}"></div>
+<div th:replace="~{fragments/nav :: alerts}"></div>
+<main class="container-fluid px-4 py-4">
+    <div class="page-title"><div><h1>Trash</h1><p>Restore notes or delete them permanently</p></div></div>
+    <div class="list-panel">
+        <div class="list-row" th:each="note : ${notes}">
+            <div>
+                <h3 th:text="${note.title}">Title</h3>
+                <p th:text="${#strings.abbreviate(note.plainText, 120)}">Preview</p>
+            </div>
+            <div class="d-flex gap-2">
+                <form th:action="@{/notes/{id}/restore(id=${note.id})}" method="post">
+                    <button class="btn btn-sm btn-success" type="submit"><i class="bi bi-arrow-counterclockwise me-1"></i>Restore</button>
+                </form>
+                <form th:action="@{/notes/{id}/delete-forever(id=${note.id})}" method="post">
+                    <button class="btn btn-sm btn-outline-danger" type="submit"><i class="bi bi-trash3 me-1"></i>Delete</button>
+                </form>
+            </div>
+        </div>
+        <div th:if="${#lists.isEmpty(notes)}" class="empty-state">
+            <i class="bi bi-trash"></i><h3>Trash is empty</h3>
+        </div>
+    </div>
+</main>
+<div th:replace="~{fragments/nav :: scripts}"></div>
+</body>
+</html>

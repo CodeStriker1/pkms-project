@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/head :: head(${note == null ? 'New Note' : 'Edit Note'})}"></head>
+<body>
+<div th:replace="~{fragments/nav :: nav}"></div>
+<main class="container-fluid px-4 py-4">
+    <form class="editor-shell" th:action="${note == null} ? @{/notes} : @{/notes/{id}(id=${note.id})}" th:object="${noteForm}" method="post" th:attr="data-note-id=${note == null ? '' : note.id}">
+        <div class="editor-top">
+            <input class="title-input" th:field="*{title}" placeholder="Untitled note" required>
+            <div class="d-flex gap-2">
+                <span class="autosave-status" id="autosaveStatus">Ready</span>
+                <button class="btn btn-primary" type="submit"><i class="bi bi-save me-1"></i>Save</button>
+            </div>
+        </div>
+        <div class="invalid-text" th:errors="*{title}"></div>
+        <div class="editor-layout">
+            <aside class="editor-sidebar">
+                <label class="form-label">Category</label>
+                <select class="form-select" th:field="*{categoryId}">
+                    <option value="">None</option>
+                    <option th:each="category : ${categories}" th:value="${category.id}" th:text="${category.name}"></option>
+                </select>
+                <label class="form-label mt-3">Tags</label>
+                <div class="tag-checks">
+                    <label class="form-check" th:each="tag : ${tags}">
+                        <input class="form-check-input" type="checkbox" th:field="*{tagIds}" th:value="${tag.id}">
+                        <span th:text="${tag.name}">Tag</span>
+                    </label>
+                </div>
+                <div class="form-check form-switch mt-3">
+                    <input class="form-check-input" type="checkbox" th:field="*{archived}">
+                    <label class="form-check-label">Archived</label>
+                </div>
+            </aside>
+            <section class="editor-main">
+                <div class="toolbar">
+                    <button type="button" data-cmd="bold"><i class="bi bi-type-bold"></i></button>
+                    <button type="button" data-cmd="italic"><i class="bi bi-type-italic"></i></button>
+                    <button type="button" data-cmd="insertUnorderedList"><i class="bi bi-list-ul"></i></button>
+                    <button type="button" data-cmd="insertOrderedList"><i class="bi bi-list-ol"></i></button>
+                    <button type="button" data-cmd="formatBlock" data-value="h2"><i class="bi bi-type-h2"></i></button>
+                </div>
+                <div id="richEditor" class="rich-editor" contenteditable="true" th:utext="*{content}"></div>
+                <textarea hidden th:field="*{content}" id="contentInput"></textarea>
+                <div class="invalid-text" th:errors="*{content}"></div>
+            </section>
+        </div>
+    </form>
+</main>
+<div th:replace="~{fragments/nav :: scripts}"></div>
+</body>
+</html>
