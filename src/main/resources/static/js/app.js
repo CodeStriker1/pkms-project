@@ -68,4 +68,49 @@
             status.textContent = "Auto-save paused";
         }
     }
+
+    const aiPanel = document.querySelector(".ai-panel");
+    const aiSummaryButton = document.getElementById("aiSummaryButton");
+    const aiQuestionsButton = document.getElementById("aiQuestionsButton");
+    const aiSummaryOutput = document.getElementById("aiSummaryOutput");
+
+    if (aiPanel && aiSummaryOutput) {
+        const runAiAction = async (path, loadingText, button) => {
+            const token = document.querySelector('meta[name="_csrf"]').content;
+            const header = document.querySelector('meta[name="_csrf_header"]').content;
+            const noteId = aiPanel.dataset.noteId;
+            button.disabled = true;
+            aiSummaryOutput.classList.remove("d-none");
+            aiSummaryOutput.textContent = loadingText;
+            try {
+                const response = await fetch(`/notes/${noteId}/ai/${path}`, {
+                    method: "POST",
+                    headers: {"Content-Type": "application/json", [header]: token}
+                });
+                if (response.status === 404 || response.status === 405) {
+                    aiSummaryOutput.textContent = "AI backend is not loaded yet. Restart the Spring Boot app and try again.";
+                    return;
+                }
+                if (!response.ok) throw new Error("AI request failed");
+                const data = await response.json();
+                aiSummaryOutput.textContent = data.summary || data.message;
+            } catch (error) {
+                aiSummaryOutput.textContent = "AI is unavailable right now. Check GEMINI_API_KEY or OPENAI_API_KEY and restart the app.";
+            } finally {
+                button.disabled = false;
+            }
+        };
+
+        if (aiSummaryButton) {
+            aiSummaryButton.addEventListener("click", () => {
+                runAiAction("summary", "Generating summary...", aiSummaryButton);
+            });
+        }
+
+        if (aiQuestionsButton) {
+            aiQuestionsButton.addEventListener("click", () => {
+                runAiAction("study-questions", "Generating study questions...", aiQuestionsButton);
+            });
+        }
+    }
 })();

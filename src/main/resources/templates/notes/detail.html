@@ -30,6 +30,22 @@
             <span th:if="${note.category}" class="pill" th:style="'--pill:' + ${note.category.color}" th:text="${note.category.name}"></span>
             <span class="tag-pill" th:each="tag : ${note.tags}" th:style="'--pill:' + ${tag.color}" th:text="${tag.name}"></span>
         </div>
+        <section class="ai-panel" th:data-note-id="${note.id}">
+            <div>
+                <span class="eyebrow">AI Assistant</span>
+                <h2>Summarize this note</h2>
+                <p>Generate a short study-friendly summary from your saved note content.</p>
+            </div>
+            <div class="d-flex gap-2 flex-wrap justify-content-end">
+                <button class="btn btn-sm btn-primary" type="button" id="aiSummaryButton">
+                    <i class="bi bi-stars me-1"></i>Summarize
+                </button>
+                <button class="btn btn-sm btn-outline-primary" type="button" id="aiQuestionsButton">
+                    <i class="bi bi-question-circle me-1"></i>Study Qs
+                </button>
+            </div>
+            <div class="ai-output d-none" id="aiSummaryOutput" aria-live="polite"></div>
+        </section>
         <div class="reader-content" th:utext="${note.content}"></div>
     </article>
 </main>

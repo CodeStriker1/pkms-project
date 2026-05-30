@@ -33,6 +33,11 @@ services:
       REMEMBER_ME_KEY: change-this-compose-secret-before-deployment
       APP_SEED_ENABLED: "true"
       JPA_DDL_AUTO: update
+      AI_PROVIDER: ${AI_PROVIDER:-auto}
+      GEMINI_API_KEY: ${GEMINI_API_KEY:-}
+      GEMINI_MODEL: ${GEMINI_MODEL:-gemini-2.5-flash}
+      OPENAI_API_KEY: ${OPENAI_API_KEY:-}
+      OPENAI_MODEL: ${OPENAI_MODEL:-gpt-5.2}
     ports:
       - "8080:8080"
     healthcheck:

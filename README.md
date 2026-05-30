@@ -18,6 +18,7 @@ MCA major project: **Design and Development of a Personal Knowledge Management S
 - Registration, login, logout, BCrypt password hashing
 - Dashboard note statistics
 - Notes with rich text editing, auto-save, edit, archive, favorite, trash, restore
+- AI note summaries and study questions with safe environment-based configuration
 - Categories and tags with many-to-many note tagging
 - Keyword search, tag filtering, relevance ranking
 - PDF and TXT export
@@ -73,7 +74,14 @@ DB_USERNAME=your_user
 DB_PASSWORD=your_password
 REMEMBER_ME_KEY=a-long-random-secret
 APP_SEED_ENABLED=false
+AI_PROVIDER=auto
+GEMINI_API_KEY=your_gemini_api_key
+GEMINI_MODEL=gemini-2.5-flash
+OPENAI_API_KEY=your_openai_api_key
+OPENAI_MODEL=gpt-5.2
 ```
+
+If `AI_PROVIDER=auto`, the app uses Gemini when `GEMINI_API_KEY` is available, otherwise OpenAI when `OPENAI_API_KEY` is available. If no API key is set, the app still runs normally and the AI summary panel shows a helpful setup message.
 
 ## Tests
 
