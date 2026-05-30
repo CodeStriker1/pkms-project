@@ -1,6 +1,5 @@
 package com.mca.pkms.service;
 
-import com.openhtmltopdf.pdfboxout.PdfRendererBuilder;
 import com.mca.pkms.dto.AutoSaveRequest;
 import com.mca.pkms.dto.DashboardStats;
 import com.mca.pkms.dto.NoteForm;
@@ -10,17 +9,28 @@ import com.mca.pkms.repository.CategoryRepository;
 import com.mca.pkms.repository.FavoriteRepository;
 import com.mca.pkms.repository.NoteRepository;
 import com.mca.pkms.repository.TagRepository;
+import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.pdmodel.PDPage;
+import org.apache.pdfbox.pdmodel.PDPageContentStream;
+import org.apache.pdfbox.pdmodel.common.PDRectangle;
+import org.apache.pdfbox.pdmodel.font.PDType1Font;
 import org.jsoup.Jsoup;
 import org.jsoup.safety.Safelist;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
 
 @Service
 public class NoteService {
+    static {
+        System.setProperty("pdfbox.fontcache",
+                System.getProperty("pdfbox.fontcache", System.getProperty("java.io.tmpdir")));
+    }
+
     private final NoteRepository noteRepository;
     private final CategoryRepository categoryRepository;
     private final TagRepository tagRepository;
@@ -163,21 +173,44 @@ public class NoteService {
 
     public byte[] exportPdf(Long id, User user) {
         Note note = find(id, user);
-        String html = """
-                <!DOCTYPE html><html><head><meta charset="UTF-8">
-                <style>body{font-family:Arial,sans-serif;line-height:1.6;color:#172033}h1{font-size:28px}</style>
-                </head><body><h1>%s</h1>%s</body></html>
-                """.formatted(escape(note.getTitle()), note.getContent());
-        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-        try {
-            new PdfRendererBuilder()
-                    .withHtmlContent(html, null)
-                    .toStream(outputStream)
-                    .run();
+        try (PDDocument document = new PDDocument(); ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
+            PDPage page = new PDPage(PDRectangle.A4);
+            document.addPage(page);
+            float margin = 56;
+            float y = page.getMediaBox().getHeight() - margin;
+            PDPageContentStream contentStream = new PDPageContentStream(document, page);
+
+            contentStream.beginText();
+            contentStream.setFont(PDType1Font.HELVETICA_BOLD, 18);
+            contentStream.newLineAtOffset(margin, y);
+            y = writeWrappedText(contentStream, note.getTitle(), 18, y, 24, 58);
+            contentStream.setFont(PDType1Font.HELVETICA, 11);
+            y -= 12;
+
+            String body = Optional.ofNullable(note.getPlainText()).orElse("").replaceAll("\\s+", " ").trim();
+            for (String paragraph : body.split("(?<=\\.)\\s+")) {
+                if (y < margin + 24) {
+                    contentStream.endText();
+                    contentStream.close();
+                    page = new PDPage(PDRectangle.A4);
+                    document.addPage(page);
+                    contentStream = new PDPageContentStream(document, page);
+                    contentStream.beginText();
+                    contentStream.setFont(PDType1Font.HELVETICA, 11);
+                    y = page.getMediaBox().getHeight() - margin;
+                    contentStream.newLineAtOffset(margin, y);
+                }
+                y = writeWrappedText(contentStream, paragraph, 11, y, 15, 92);
+                y -= 6;
+            }
+
+            contentStream.endText();
+            contentStream.close();
+            document.save(outputStream);
+            return outputStream.toByteArray();
         } catch (Exception ex) {
             throw new IllegalStateException("Unable to export PDF.", ex);
         }
-        return outputStream.toByteArray();
     }
 
     private void apply(Note note, String title, String content, Long categoryId, Set<Long> tagIds, User user) {
@@ -219,7 +252,25 @@ public class NoteService {
         return score;
     }
 
-    private String escape(String input) {
-        return input.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;");
+    private float writeWrappedText(PDPageContentStream contentStream, String text, int fontSize,
+                                   float y, float lineHeight, int maxChars) throws IOException {
+        String remaining = Optional.ofNullable(text).orElse("").trim();
+        if (remaining.isBlank()) {
+            contentStream.newLineAtOffset(0, -lineHeight);
+            return y - lineHeight;
+        }
+        while (!remaining.isBlank()) {
+            int length = Math.min(maxChars, remaining.length());
+            int breakAt = remaining.length() <= maxChars ? remaining.length() : remaining.lastIndexOf(' ', length);
+            if (breakAt <= 0) {
+                breakAt = length;
+            }
+            String line = remaining.substring(0, breakAt).trim();
+            contentStream.showText(line);
+            contentStream.newLineAtOffset(0, -lineHeight);
+            y -= lineHeight;
+            remaining = remaining.substring(breakAt).trim();
+        }
+        return y;
     }
 }

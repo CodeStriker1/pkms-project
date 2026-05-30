@@ -26,6 +26,9 @@ public class DashboardController extends BaseController {
     @GetMapping("/dashboard")
     public String dashboard(Authentication authentication, Model model) {
         User user = currentUser(authentication);
+        if (user.needsDisplayNameSetup()) {
+            return "redirect:/onboarding/display-name";
+        }
         model.addAttribute("user", user);
         model.addAttribute("stats", noteService.stats(user));
         model.addAttribute("notes", noteService.dashboardNotes(user));

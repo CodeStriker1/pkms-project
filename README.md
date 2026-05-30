@@ -43,7 +43,7 @@ Hibernate creates/updates tables automatically. The full SQL schema is also avai
 ## Run
 
 ```bash
-mvn clean spring-boot:run
+mvn clean spring-boot:run -Dspring-boot.run.profiles=dev
 ```
 
 Open:
@@ -59,11 +59,49 @@ Email: student@example.com
 Password: password123
 ```
 
+For a quick demo without MySQL:
+
+```bash
+mvn clean spring-boot:run -Dspring-boot.run.profiles=demo
+```
+
+For production, provide environment variables:
+
+```text
+DB_URL=jdbc:mysql://your-host:3306/pkms_db
+DB_USERNAME=your_user
+DB_PASSWORD=your_password
+REMEMBER_ME_KEY=a-long-random-secret
+APP_SEED_ENABLED=false
+```
+
 ## Tests
 
 ```bash
 mvn test
 ```
+
+## Docker
+
+Build and run the app with MySQL:
+
+```bash
+docker compose up --build
+```
+
+Open:
+
+```text
+http://localhost:8080
+```
+
+Health check:
+
+```text
+http://localhost:8080/actuator/health
+```
+
+Before deploying publicly, change `REMEMBER_ME_KEY`, database passwords, and set `APP_SEED_ENABLED=false`.
 
 ## Project Structure
 

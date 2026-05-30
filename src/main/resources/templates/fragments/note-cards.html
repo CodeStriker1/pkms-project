@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <body>
-<div th:fragment="cards(notes)" class="note-grid">
+<div th:fragment="cards(notes, emptyMessage)" class="note-grid">
     <article class="note-card" th:each="note : ${notes}">
         <a th:href="@{/notes/{id}(id=${note.id})}" class="note-link">
-            <div class="d-flex justify-content-between gap-2">
+            <div class="d-flex justify-content-between align-items-start gap-2">
                 <h3 th:text="${note.title}">Title</h3>
                 <span th:if="${note.autoSaved}" class="badge text-bg-warning">Draft</span>
             </div>
@@ -13,12 +13,18 @@
                 <span th:if="${note.category}" class="pill" th:style="'--pill:' + ${note.category.color}" th:text="${note.category.name}">Category</span>
                 <span class="tag-pill" th:each="tag : ${note.tags}" th:style="'--pill:' + ${tag.color}" th:text="${tag.name}">Tag</span>
             </div>
+            <div class="note-footer">
+                <span><i class="bi bi-clock me-1"></i><span th:text="${#temporals.format(note.updatedAt, 'dd MMM yyyy, hh:mm a')}">Updated</span></span>
+                <span th:if="${note.archived}" class="status-badge"><i class="bi bi-archive me-1"></i>Archived</span>
+                <span th:if="${note.deleted}" class="status-badge danger"><i class="bi bi-trash me-1"></i>Trash</span>
+            </div>
         </a>
     </article>
     <div th:if="${#lists.isEmpty(notes)}" class="empty-state">
         <i class="bi bi-journal-text"></i>
-        <h3>No notes found</h3>
-        <p>Create a note or adjust your filters.</p>
+        <h3>No notes yet</h3>
+        <p th:text="${emptyMessage} ?: 'Create a note or adjust your filters.'">Create a note or adjust your filters.</p>
+        <a class="btn btn-primary" th:href="@{/notes/new}"><i class="bi bi-plus-lg me-1"></i>Create Note</a>
     </div>
 </div>
 </body>

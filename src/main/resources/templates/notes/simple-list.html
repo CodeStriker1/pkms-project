@@ -9,7 +9,7 @@
         <div><h1 th:text="${pageTitle}">Notes</h1><p>Saved knowledge collection</p></div>
         <a class="btn btn-primary" th:href="@{/notes/new}"><i class="bi bi-plus-lg me-1"></i>New Note</a>
     </div>
-    <div th:replace="~{fragments/note-cards :: cards(${notes})}"></div>
+    <div th:replace="~{fragments/note-cards :: cards(${notes}, 'This collection is empty right now.')}"></div>
 </main>
 <div th:replace="~{fragments/nav :: scripts}"></div>
 </body>

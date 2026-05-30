@@ -51,6 +51,17 @@ class NoteServiceTest {
         assertThat(noteService.dashboardNotes(user)).hasSize(1);
     }
 
+    @Test
+    void exportPdfProducesPdfDocument() {
+        User user = createUser("pdf@example.com");
+        Note note = createNote("PDF Export", "<p>This note should export as a PDF file.</p>", user);
+
+        byte[] pdf = noteService.exportPdf(note.getId(), user);
+
+        assertThat(new String(pdf, 0, 4)).isEqualTo("%PDF");
+        assertThat(pdf.length).isGreaterThan(100);
+    }
+
     private User createUser(String email) {
         RegisterRequest request = new RegisterRequest();
         request.setName("Test User");

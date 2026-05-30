@@ -30,6 +30,8 @@ public class ProfileController extends BaseController {
         ProfileForm profileForm = new ProfileForm();
         profileForm.setName(user.getName());
         profileForm.setEmail(user.getEmail());
+        profileForm.setDisplayName(user.getPreferredName());
+        model.addAttribute("user", user);
         model.addAttribute("profileForm", profileForm);
         model.addAttribute("passwordForm", new PasswordForm());
         return "profile/index";
@@ -39,6 +41,7 @@ public class ProfileController extends BaseController {
     public String updateProfile(@Valid @ModelAttribute ProfileForm profileForm, BindingResult bindingResult,
                                 Authentication authentication, Model model, RedirectAttributes redirectAttributes) {
         if (bindingResult.hasErrors()) {
+            model.addAttribute("user", currentUser(authentication));
             model.addAttribute("passwordForm", new PasswordForm());
             return "profile/index";
         }
@@ -46,6 +49,7 @@ public class ProfileController extends BaseController {
             userService.updateProfile(currentUser(authentication), profileForm);
         } catch (BadRequestException ex) {
             bindingResult.reject("profile", ex.getMessage());
+            model.addAttribute("user", currentUser(authentication));
             model.addAttribute("passwordForm", new PasswordForm());
             return "profile/index";
         }
@@ -57,14 +61,26 @@ public class ProfileController extends BaseController {
     public String changePassword(@Valid @ModelAttribute PasswordForm passwordForm, BindingResult bindingResult,
                                  Authentication authentication, Model model, RedirectAttributes redirectAttributes) {
         if (bindingResult.hasErrors()) {
-            model.addAttribute("profileForm", new ProfileForm());
+            User user = currentUser(authentication);
+            ProfileForm profileForm = new ProfileForm();
+            profileForm.setName(user.getName());
+            profileForm.setEmail(user.getEmail());
+            profileForm.setDisplayName(user.getPreferredName());
+            model.addAttribute("user", user);
+            model.addAttribute("profileForm", profileForm);
             return "profile/index";
         }
         try {
             userService.changePassword(currentUser(authentication), passwordForm);
         } catch (BadRequestException ex) {
             bindingResult.reject("password", ex.getMessage());
-            model.addAttribute("profileForm", new ProfileForm());
+            User user = currentUser(authentication);
+            ProfileForm profileForm = new ProfileForm();
+            profileForm.setName(user.getName());
+            profileForm.setEmail(user.getEmail());
+            profileForm.setDisplayName(user.getPreferredName());
+            model.addAttribute("user", user);
+            model.addAttribute("profileForm", profileForm);
             return "profile/index";
         }
         redirectAttributes.addFlashAttribute("success", "Password changed.");

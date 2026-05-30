@@ -1,0 +1,8 @@
+target
+.m2
+*.log
+app-error.log
+app.log
+.git
+.idea
+*.iml

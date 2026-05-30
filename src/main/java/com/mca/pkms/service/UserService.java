@@ -49,7 +49,14 @@ public class UserService {
                 .filter(existing -> !existing.getId().equals(user.getId()))
                 .ifPresent(existing -> { throw new BadRequestException("Email is already used by another account."); });
         user.setName(form.getName().trim());
+        user.setDisplayName(form.getDisplayName().trim());
         user.setEmail(email);
+        userRepository.save(user);
+    }
+
+    @Transactional
+    public void updateDisplayName(User user, String displayName) {
+        user.setDisplayName(displayName.trim());
         userRepository.save(user);
     }
 

@@ -26,6 +26,9 @@ public class User {
     @Column(nullable = false, unique = true)
     private String email;
 
+    @Size(max = 80)
+    private String displayName;
+
     @NotBlank
     @Column(nullable = false)
     private String password;
@@ -58,6 +61,8 @@ public class User {
     public void setName(String name) { this.name = name; }
     public String getEmail() { return email; }
     public void setEmail(String email) { this.email = email; }
+    public String getDisplayName() { return displayName; }
+    public void setDisplayName(String displayName) { this.displayName = displayName; }
     public String getPassword() { return password; }
     public void setPassword(String password) { this.password = password; }
     public Role getRole() { return role; }
@@ -66,4 +71,27 @@ public class User {
     public void setEnabled(boolean enabled) { this.enabled = enabled; }
     public LocalDateTime getCreatedAt() { return createdAt; }
     public LocalDateTime getUpdatedAt() { return updatedAt; }
+
+    public String getPreferredName() {
+        if (displayName != null && !displayName.isBlank()) {
+            return displayName.trim();
+        }
+        if (name != null && !name.isBlank()) {
+            return name.trim();
+        }
+        return "PKMS User";
+    }
+
+    public String getInitials() {
+        String preferred = getPreferredName();
+        String[] parts = preferred.trim().split("\\s+");
+        if (parts.length == 1) {
+            return parts[0].substring(0, Math.min(2, parts[0].length())).toUpperCase();
+        }
+        return (parts[0].substring(0, 1) + parts[parts.length - 1].substring(0, 1)).toUpperCase();
+    }
+
+    public boolean needsDisplayNameSetup() {
+        return displayName == null || displayName.isBlank();
+    }
 }

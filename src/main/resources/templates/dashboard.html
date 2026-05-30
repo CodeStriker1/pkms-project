@@ -5,13 +5,27 @@
 <div th:replace="~{fragments/nav :: nav}"></div>
 <div th:replace="~{fragments/nav :: alerts}"></div>
 <main class="container-fluid px-4 py-4">
-    <div class="page-title">
-        <div>
-            <h1 th:text="'Welcome, ' + ${user.name}">Welcome</h1>
-            <p>Knowledge workspace overview</p>
+    <section class="workspace-hero">
+        <div class="hero-copy">
+            <span class="eyebrow">Personal workspace</span>
+            <h1 th:text="'Welcome back, ' + ${user.preferredName}">Welcome back</h1>
+            <p>Your notes, ideas, references, and decisions are organized here so your project thinking stays searchable and reusable.</p>
         </div>
-        <a class="btn btn-primary" th:href="@{/notes/new}"><i class="bi bi-plus-lg me-1"></i>Create Note</a>
-    </div>
+        <aside class="profile-summary">
+            <span class="avatar avatar-lg" th:text="${user.initials}">U</span>
+            <div>
+                <strong th:text="${user.preferredName}">User</strong>
+                <span th:text="${user.email}">email</span>
+            </div>
+        </aside>
+    </section>
+    <section class="quick-actions">
+        <a th:href="@{/notes/new}"><i class="bi bi-plus-lg"></i><span>Create Note</span></a>
+        <a th:href="@{/notes}"><i class="bi bi-search"></i><span>Search</span></a>
+        <a th:href="@{/favorites}"><i class="bi bi-star"></i><span>Favorites</span></a>
+        <a th:href="@{/archive}"><i class="bi bi-archive"></i><span>Archive</span></a>
+        <a th:href="@{/trash}"><i class="bi bi-trash"></i><span>Trash</span></a>
+    </section>
     <section class="stats-grid">
         <div class="stat-card"><span>Total</span><strong th:text="${stats.totalNotes()}">0</strong></div>
         <div class="stat-card"><span>Active</span><strong th:text="${stats.activeNotes()}">0</strong></div>
@@ -24,7 +38,7 @@
             <h2>Recent Notes</h2>
             <a th:href="@{/notes}">View all</a>
         </div>
-        <div th:replace="~{fragments/note-cards :: cards(${notes})}"></div>
+        <div th:replace="~{fragments/note-cards :: cards(${notes}, 'Your recent notes will appear here once you start collecting ideas.')}"></div>
     </section>
 </main>
 <div th:replace="~{fragments/nav :: scripts}"></div>

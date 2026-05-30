@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/head :: head('Set Up Workspace')}"></head>
+<body class="auth-page">
+<main class="auth-shell">
+    <section class="auth-panel onboarding-panel">
+        <div class="brand-mark"><i class="bi bi-stars"></i></div>
+        <h1>What should I call you?</h1>
+        <p class="text-muted">This name will personalize your dashboard, navbar, and workspace identity.</p>
+        <form th:action="@{/onboarding/display-name}" th:object="${displayNameForm}" method="post" class="vstack gap-3">
+            <div>
+                <label class="form-label">Display name</label>
+                <input class="form-control form-control-lg" th:field="*{displayName}" required autofocus>
+                <div class="invalid-text" th:errors="*{displayName}"></div>
+            </div>
+            <button class="btn btn-primary w-100" type="submit">Continue to Dashboard</button>
+        </form>
+    </section>
+</main>
+<div th:replace="~{fragments/nav :: scripts}"></div>
+</body>
+</html>
